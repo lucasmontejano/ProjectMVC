@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="image/mad5png.png" type="image/x-icon">
+    <title>Lista de Clientes</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        async function fetchClients() {
+            const response = await fetch('/clients');
+            const clients = await response.json();
+            const clientsTableBody = document.getElementById('clients-table-body');
+            clientsTableBody.innerHTML = '';
+            clients.forEach(client => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${client.id}</td>
+                    <td>${client.name}</td>
+                    <td>${client.email}</td>
+                    <td>${client.cpf}</td>
+                    <td>${client.phone}</td>
+                    <td>${client.address}</td>
+                    <td>${client.city}</td>
+                    <td>
+                        <button class="botao-editar" onclick="editClient(${client.id})">Edit</button>
+                        <button class="botao-remover" onclick="deleteClient(${client.id})">Delete</button>
+                    </td>
+                `;
+                clientsTableBody.appendChild(row);
+            });
+        }
+
+        function editClient(clientId) {
+            window.location.href = `/edit-client.html?id=${clientId}`;
+        }
+
+        async function deleteClient(clientId) {
+            const response = await fetch(`/clients/${clientId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert('Client deleted successfully!');
+                fetchClients();
+            } else {
+                alert('Failed to delete client');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchClients);
+    </script>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Controle de Clientes</h1>
+        <button class="botao-adicionar" onclick="window.location.href='/add-client.html'">Adicionar Cliente </button>
+    </header>
+    <h2>Clientes</h2>
+    <table class="tabela-clientes">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>CPF</th>
+            <th>Telefone</th>
+            <th>Endereço</th>
+            <th>Cidade</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody id="clients-table-body"></tbody>
+    </table>
+</div>
+</body>
+</html>
